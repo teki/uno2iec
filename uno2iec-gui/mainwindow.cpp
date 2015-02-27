@@ -72,7 +72,7 @@ QStringList LOG_LEVELS = (QStringList()
 
 
 // Default Device and Arduino PIN configuration.
-const uint DEFAULT_BAUDRATE = BAUD115200;
+const uint DEFAULT_BAUDRATE = QSerialPort::Baud115200;
 const uint DEFAULT_DEVICE_NUMBER = 8;
 const uint DEFAULT_RESET_PIN = 7;
 const uint DEFAULT_CLOCK_PIN = 4;
@@ -132,7 +132,7 @@ const QString PROGRAM_VERSION_HISTORY = qApp->tr(
 MainWindow::MainWindow(QWidget* parent) :
 	QMainWindow(parent)
 	, ui(new Ui::MainWindow)
-	, m_port(QextSerialPort::EventDriven, this)
+	, m_port(this)
 	, m_isConnected(false)
 	, m_iface()
 	, m_isInitialized(false)
@@ -147,15 +147,15 @@ MainWindow::MainWindow(QWidget* parent) :
 	loggerInstance().addTransport(this);
 
 	// Set up the port basic parameters, these won't change...promise.
-	m_port.setDataBits(DATA_8);
-	m_port.setParity(PAR_NONE);
-	m_port.setFlowControl(FLOW_OFF);
-	m_port.setStopBits(STOP_1);
+    m_port.setDataBits(QSerialPort::Data8);
+	m_port.setParity(QSerialPort::NoParity);
+	m_port.setFlowControl(QSerialPort::NoFlowControl);
+	m_port.setStopBits(QSerialPort::OneStop);
 
 	enumerateComPorts();
 
 	readSettings();
-	m_port.setBaudRate(static_cast<BaudRateType>(m_appSettings.baudRate));
+	m_port.setBaudRate(static_cast<qint32>(m_appSettings.baudRate));
 	usePortByFriendlyName(m_appSettings.portName);
 
 	m_port.open(QIODevice::ReadWrite);
@@ -265,21 +265,21 @@ void MainWindow::onCbmMachineSelected(QAction* pAction)
 
 void MainWindow::enumerateComPorts()
 {
-	m_ports = QextSerialEnumerator::getPorts();
+	m_ports = QSerialPortInfo::availablePorts();
 
 	// Manually add the ports that the enumerator can't know about.
 #if defined(__arm__)
 	// just for the Raspberry PI.
-	static QextPortInfo piPort = { "/dev/ttyAMA0", "ttyAMA0", "Arduino AMA0", "", 0, 0 };
+	static QSerialPortInfo piPort = { "/dev/ttyAMA0", "ttyAMA0", "Arduino AMA0", "", 0, 0 };
 	m_ports.insert(0, piPort);
 	//	m_port.setBaudRate(BAUD57600/*BAUD1152000*/);
 #elif defined(Q_OS_LINUX)
-	static QextPortInfo unixPort = { "/dev/ttyACM0", "ttyACM0", "Arduino ACM0", "", 0, 0 };
+	static QSerialPortInfo unixPort = { "/dev/ttyACM0", "ttyACM0", "Arduino ACM0", "", 0, 0 };
 	m_ports.insert(0, unixPort);
-#elif defined(Q_OS_MAC)
+#elif defined(__APLE__)
 	QDir dev("/dev","tty.usbmodem*", QDir::Name,QDir::Files bitor QDir::Readable bitor QDir::Writable bitor QDir::System);
 	foreach(const QFileInfo entry, dev.entryInfoList()) {
-		static QextPortInfo unixPort = { entry.absoluteFilePath(), entry.fileName(), entry.fileName(), "", 0, 0 };
+		static QSerialPortInfo unixPort = { entry.absoluteFilePath(), entry.fileName(), entry.fileName(), "", 0, 0 };
 		m_ports.insert(0, unixPort);
 	}
 #endif
@@ -288,10 +288,10 @@ void MainWindow::enumerateComPorts()
 
 void MainWindow::usePortByFriendlyName(const QString& friendlyName)
 {
-	foreach(QextPortInfo port, m_ports) {
-		if(port.friendName == friendlyName) {
+	foreach(QSerialPortInfo port, m_ports) {
+		if(port.portName() == friendlyName) {
 			// found it, set it and be done.
-			m_port.setPortName(port.portName);
+			m_port.setPortName(port.portName());
 			break;
 		}
 	}
@@ -337,7 +337,7 @@ void MainWindow::on_actionSettings_triggered()
 			updateImageList();
 		}
 		if(m_appSettings.baudRate not_eq oldSettings.baudRate)
-			m_port.setBaudRate(static_cast<BaudRateType>(m_appSettings.baudRate));
+			m_port.setBaudRate(static_cast<qint32>(m_appSettings.baudRate));
 
 		// Was port changed?
 		if(m_appSettings.portName not_eq oldSettings.portName) {
@@ -390,7 +390,7 @@ void MainWindow::readSettings()
 	m_appSettings.lastSpecificMounted = sets.value("singleImageName").toString();
 	QDir::setCurrent(m_appSettings.imageDirectory);
 	ui->imageFilter->setText(sets.value("imageFilter", QString()).toString());
-	m_appSettings.portName = sets.value("portName", m_ports.isEmpty() ? "COM1" : m_ports.first().friendName).toString();
+	m_appSettings.portName = sets.value("portName", m_ports.isEmpty() ? "COM1" : m_ports.first().portName()).toString();
 	m_appSettings.baudRate = sets.value("baudRate", QString::number(DEFAULT_BAUDRATE)).toUInt();
 	m_appSettings.deviceNumber = sets.value("deviceNumber", QString::number(DEFAULT_DEVICE_NUMBER)).toUInt();
 	m_appSettings.atnPin = sets.value("atnPin", QString::number(DEFAULT_ATN_PIN)).toUInt();

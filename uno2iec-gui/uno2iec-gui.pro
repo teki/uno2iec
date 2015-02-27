@@ -4,28 +4,21 @@
 #
 #-------------------------------------------------
 
-QT       += core gui
+QT += core gui
+QT += serialport
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = rpi2iec
+TARGET = uno2iec-gui
 TEMPLATE = app
 
 DEFINES += CONSOLE_DEBUG
 
-#CONFIG += extserialport
-#LIBS += -L../debug/qextserialport -lqextserialport1
-#LIBS += -L../qextserialport/release -lQt5ExtSerialPort1
-INCLUDEPATH += ../qextserialport/src
-#QMAKE_LIBDIR += ../qextserialport/src/build
-include(../qextserialport/src/qextserialport.pri)
-
-QMAKE_CXXFLAGS += -std=gnu++0x
-    # QMAKE_CXXFLAGS +=-std=c++0x
+# QMAKE_CXXFLAGS += -std=c++0x
 
 win32 {
     # version resource and appicon.
-    RC_FILE = rpi2iec.rc
+    RC_FILE = uno2iec-gui.rc
     OBJPRE = win
     # Add this for static linking of mingw libs. Note: Needs static Qt version.
     # QMAKE_LFLAGS += -static-libgcc -static-libstdc++ -static
@@ -83,7 +76,7 @@ HEADERS += mainwindow.hpp \
         settingsdialog.hpp \
         dirlistthemingconsts.hpp \
         doscommands.hpp \
-        uno2iec/cbmdefines.h \
+        ../uno2iec/cbmdefines.h \
         x64driver.hpp \
         logfiltersetup.hpp \
         qcmdtextedit.h \
@@ -100,7 +93,7 @@ OTHER_FILES += \
         changes.txt \
         notes.txt \
         README.TXT \
-        rpi2iec.rc \
+        uno2iec-gui.rc \
         icons/ok.png \
         icons/arrow_refresh.png \
         icons/browse.png \

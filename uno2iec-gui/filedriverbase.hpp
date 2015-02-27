@@ -8,7 +8,7 @@
 #include <iso646.h>
 #endif
 
-#include "uno2iec/cbmdefines.h"
+#include "../uno2iec/cbmdefines.h"
 
 class ISendLine
 {

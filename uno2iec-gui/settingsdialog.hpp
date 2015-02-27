@@ -5,9 +5,9 @@
 #include <QString>
 #include <QIntValidator>
 
-#include "qextserialenumerator.h"
+#include <QtSerialPort/QtSerialPort>
 
-typedef QList<QextPortInfo> QextPortInfoList;
+typedef QList<QSerialPortInfo> QSerialPortInfoList;
 
 namespace Ui {
 class SettingsDialog;
@@ -39,7 +39,7 @@ class SettingsDialog : public QDialog
 	Q_OBJECT
 
 public:
-	explicit SettingsDialog(QextPortInfoList& ports, AppSettings& settings, QWidget *parent = 0);
+	explicit SettingsDialog(QSerialPortInfoList& ports, AppSettings& settings, QWidget *parent = 0);
 	~SettingsDialog();
 
 private slots:

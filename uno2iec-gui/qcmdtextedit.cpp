@@ -3,7 +3,7 @@
 
 #include "qcmdtextedit.h"
 #include "logger.hpp"
-#include "uno2iec/cbmdefines.h"
+#include "../uno2iec/cbmdefines.h"
 
 QCmdTextEdit::QCmdTextEdit(QWidget* parent) :
 	QTextEdit(parent)
