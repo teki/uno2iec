@@ -4,8 +4,8 @@
 #ifndef NO_LOGGING
 
 const struct {
-	prog_uchar abbreviated;
-	prog_uchar string[6]; // <-- Set this to the longest one including \0
+	unsigned char abbreviated;
+	unsigned char string[6]; // <-- Set this to the longest one including \0
 } facilities[] PROGMEM = { FAC_MAIN, "MAIN", FAC_IEC, "IEC", FAC_IFACE, "IFACE" };
 
 static const char siwe[] PROGMEM = "SIWE";
