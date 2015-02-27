@@ -392,7 +392,8 @@ void Interface::processOpenCommand(uchar channel, const QByteArray& cmd, bool lo
 			m_openState = O_CMD;
 			break;
 
-		case CBM::READPRG_CHANNEL:
+        case CBM::READPRG_CHANNEL:
+        case CBM::READPRG_CHANNEL2:
 			// ...it was a open file for reading (load) command.
 			m_openState = O_NOTHING;
 			if(localImageSelectionMode) {// for this we have to fall back to nativeFS driver first.
@@ -420,6 +421,7 @@ void Interface::processOpenCommand(uchar channel, const QByteArray& cmd, bool lo
 			break;
 
 		case CBM::WRITEPRG_CHANNEL:
+        case CBM::WRITEPRG_CHANNEL2:
 			// it was an open file for writing (save) command.
 			m_openState = O_NOTHING;
 			if(0 not_eq m_currFileDriver) {

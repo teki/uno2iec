@@ -25,6 +25,8 @@ namespace CBM {
 enum IECChannels {
 	READPRG_CHANNEL = 0,
 	WRITEPRG_CHANNEL = 1,
+    READPRG_CHANNEL2 = 8,
+    WRITEPRG_CHANNEL2 = 9,
 	CMD_CHANNEL = 15
 };
 /*
